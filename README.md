@@ -22,14 +22,14 @@ public void setHealth(float newHealth) {
     // Minecraft Code
 }
 ```
-
+ 
 To get there, we first need to define a transformer, this should optimally be in its own class and look something like this:
 
 ```java
 @Transform(EntityLiving.class) // The class we want to transform
 public class EntityLivingTransformer extends EntityLiving { // Extending EntityLiving in our transformer makes things easier, but isn't required (Which, for example, allows you to transform final classes)
     
-    @Inject(TransformationType.INSERT) // Our goal is to insert code at the beginning of the method, and leave everything else intact
+    @Inject(InjectionType.INSERT) // Our goal is to insert code at the beginning of the method, and leave everything else intact
     public void setHealth(float newHealth) { // Then just "override" the method as usual, if it is final add an _INJECTED to the method name
         ImaginaryEvent event = ImaginaryEventBus.callEvent(new ImaginaryEvent(this, newHealth)); // Our event handling code from above
             
@@ -66,7 +66,35 @@ There are three types of Injection:
 ## Compiling
 
 Run this command to build the api project.
-`gradlew jar`
+`./gradlew jar`
 
 If you want to build the example project add `-Pbuild-example`
-`gradlew jar -Pbuild-example`
+`./gradlew jar -Pbuild-example`
+
+## Installation
+
+To install the api jar into your local maven repo run
+`./gradlew publishToMavenLocal`
+
+The correct artifact can then be included using the following dependency definition:
+```xml
+        <dependency>
+            <groupId>me.yamakaja.runtimetransformer</groupId>
+            <artifactId>api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+```
+
+Don't forget to actually include the artifact in your final jar, using the `maven-shade-plugin` or an equivalent alternative!
+
+## Alternative: Maven repository
+
+@sgdc3 has offered to host the artifacts on their build server, you can access them by adding the following to your
+`<repositories>` (This way you wont have to compile it locally):
+
+```xml
+        <repository>
+            <id>codemc</id>
+            <url>https://repo.codemc.org/repository/maven-public/</url>
+        </repository>
+```
